@@ -1,51 +1,63 @@
 package com.example.demo.service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.demo.model.Bus;
 import com.example.demo.model.SensorData;
 import com.example.demo.model.SensorType;
-
+import com.example.demo.repository.BusRepository;
+import com.example.demo.repository.SensorRepository;
 import org.springframework.stereotype.Service;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class SensorService {
-    private final List<SensorData> dataList = new ArrayList<>();
 
-    public void addData(SensorData data) {
-        if (data.getSensorType() == SensorType.ENGINE_TEMP && data.getValue() > 90) {
-            data.setAnomaly(true);
-        } else if (data.getSensorType() == SensorType.TIRE_PRESSURE && data.getValue() < 1.8) {
-            data.setAnomaly(true);
-        } else if (data.getSensorType() == SensorType.FUEL_LEVEL && data.getValue() < 10) {
-            data.setAnomaly(true);
-        } else {
-            data.setAnomaly(false);
-        }
-        dataList.add(data);
-        System.out.println("Получены данные от автобуса " + data.getBusId()
-                + ": " + data.getSensorType() + " = " + data.getValue());
+    private final SensorRepository sensorRepository;
+    private final BusRepository busRepository;
+
+    public SensorService(SensorRepository sensorRepository, BusRepository busRepository) {
+        this.sensorRepository = sensorRepository;
+        this.busRepository = busRepository;
     }
 
-    public List<SensorData> getAllData() {
-        return dataList;
+    public SensorData addSensorData(Long busId, SensorData data) {
+        Bus bus = busRepository.findById(busId)
+                .orElseThrow(() -> new RuntimeException("Автобус не найден"));
+        data.setBus(bus);
+        data.setTimestamp(LocalDateTime.now());
+        data.setAnomaly(checkAnomaly(data));
+        return sensorRepository.save(data);
+    }
+
+    public List<SensorData> getAllSensors() {
+        return sensorRepository.findAll();
+    }
+
+    public List<SensorData> getSensorsByBus(Long busId) {
+        return sensorRepository.findByBusId(busId);
+    }
+
+    private boolean checkAnomaly(SensorData data) {
+        double value = data.getValue();
+        return switch (data.getSensorType()) {
+            case ENGINE_TEMP -> value > 100 || value < 60;
+            case TIRE_PRESSURE -> value < 1.5 || value > 3.0;
+            case FUEL_LEVEL -> value < 10 || value > 100;
+        };
     }
 
     public List<SensorData> getAnomalies() {
-        List<SensorData> anomalies = new ArrayList<>();
-        for (SensorData data : dataList) {
-            if (data.isAnomaly()) {
-                anomalies.add(data);
-            }
-        }
-        return anomalies;
+        return sensorRepository.findAll()
+                .stream()
+                .filter(SensorData::isAnomaly)
+                .toList();
     }
 
-    public SensorData getLastByBusId(Long busId) {
-        for (int i = dataList.size() - 1; i >= 0; i--) {
-            if (dataList.get(i).getBusId().equals(busId)) {
-                return dataList.get(i);
-            }
-        }
-        return null;
+    public List<SensorData> getAnomaliesByBus(Long busId) {
+        return sensorRepository.findByBusId(busId)
+                .stream()
+                .filter(SensorData::isAnomaly)
+                .toList();
     }
+
 }

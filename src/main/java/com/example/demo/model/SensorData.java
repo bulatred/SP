@@ -1,41 +1,34 @@
 package com.example.demo.model;
 
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
+@Data
+@NoArgsConstructor   
+@AllArgsConstructor
+
+@Entity
+@Table(name = "sensor_data")
 public class SensorData {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long busId;
+
+    @ManyToOne
+    @JoinColumn(name = "bus_id")
+    @JsonBackReference
+    private Bus bus;
+
+    @Enumerated(EnumType.STRING)
     private SensorType sensorType;
+
     private Double value;
     private LocalDateTime timestamp;
     private boolean anomaly;
-
-    public SensorData() {}
-
-    public SensorData(Long id, Long busId, SensorType sensorType, Double value, LocalDateTime timestamp, boolean anomaly) {
-        this.id = id;
-        this.busId = busId;
-        this.sensorType = sensorType;
-        this.value = value;
-        this.timestamp = timestamp;
-        this.anomaly = anomaly;
-    }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public Long getBusId() { return busId; }
-    public void setBusId(Long busId) { this.busId = busId; }
-
-    public SensorType getSensorType() { return sensorType; }
-    public void setSensorType(SensorType sensorType) { this.sensorType = sensorType; }
-
-    public Double getValue() { return value; }
-    public void setValue(Double value) { this.value = value; }
-
-    public LocalDateTime getTimestamp() { return timestamp; }
-    public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
-
-    public boolean isAnomaly() { return anomaly; }
-    public void setAnomaly(boolean anomaly) { this.anomaly = anomaly; }
 }

@@ -4,7 +4,6 @@ import com.example.demo.model.SensorData;
 import com.example.demo.service.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -17,21 +16,33 @@ public class SensorController {
         this.sensorService = sensorService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> receiveData(@RequestBody SensorData data) {
-        sensorService.addData(data);
-        return ResponseEntity.ok("Данные получены");
-    }
+    @PostMapping("/{busId}")
+    public ResponseEntity<SensorData> addSensor(
+            @PathVariable Long busId,
+            @RequestBody SensorData data) {
+        SensorData created = sensorService.addSensorData(busId, data);
+        return ResponseEntity.ok(created);
+        }
 
     @GetMapping
-    public ResponseEntity<List<SensorData>> getAll() {
-        return ResponseEntity.ok(sensorService.getAllData());
+    public ResponseEntity<List<SensorData>> getAllSensors() {
+        return ResponseEntity.ok(sensorService.getAllSensors());
     }
 
     @GetMapping("/{busId}")
-    public ResponseEntity<?> getLastForBus(@PathVariable Long busId) {
-        SensorData data = sensorService.getLastByBusId(busId);
-        if (data != null) return ResponseEntity.ok(data);
-        else return ResponseEntity.notFound().build();
+    public ResponseEntity<List<SensorData>> getSensorsByBus(@PathVariable Long busId) {
+        return ResponseEntity.ok(sensorService.getSensorsByBus(busId));
+    }
+
+    @GetMapping("/anomalies")
+    public ResponseEntity<List<SensorData>> getAnomalies() {
+        List<SensorData> anomalies = sensorService.getAnomalies();
+        return ResponseEntity.ok(anomalies);
+    }
+
+    @GetMapping("/anomalies/{busId}")
+    public ResponseEntity<List<SensorData>> getAnomaliesByBus(@PathVariable Long busId) {
+        List<SensorData> anomalies = sensorService.getAnomaliesByBus(busId);
+        return ResponseEntity.ok(anomalies);
     }
 }
