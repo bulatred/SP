@@ -8,6 +8,9 @@ import com.example.demo.repository.SensorRepository;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.EnumMap;
+import java.util.Map;
+
 
 @Service
 public class SensorService {
@@ -60,4 +63,24 @@ public class SensorService {
                 .toList();
     }
 
+    public List<SensorData> getHistoryByBus(Long busId) {
+    return sensorRepository.findByBusId(busId);
+    }
+
+
+    public Map<SensorType, SensorData> getLatestByBus(Long busId) {
+    Map<SensorType, SensorData> result = new EnumMap<>(SensorType.class);
+
+    for (SensorType type : SensorType.values()) {
+        sensorRepository
+            .findTop1ByBusIdAndSensorTypeOrderByTimestampDesc(busId, type)
+            .stream()
+            .findFirst()
+            .ifPresent(data -> result.put(type, data));
+    }
+    return result;
+    }
+
 }
+
+

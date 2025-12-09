@@ -5,6 +5,9 @@ import com.example.demo.service.SensorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import com.example.demo.model.SensorType;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/sensors")
@@ -45,4 +48,16 @@ public class SensorController {
         List<SensorData> anomalies = sensorService.getAnomaliesByBus(busId);
         return ResponseEntity.ok(anomalies);
     }
+
+    @GetMapping("/latest/{busId}")
+    public ResponseEntity<Map<SensorType, SensorData>> getLatestSensors(@PathVariable Long busId) {
+        return ResponseEntity.ok(sensorService.getLatestByBus(busId));
+    }
+
+    @GetMapping("/history/{busId}")
+    public ResponseEntity<List<SensorData>> getHistory(@PathVariable Long busId) {
+        return ResponseEntity.ok(sensorService.getHistoryByBus(busId));
+    }
+
+
 }
