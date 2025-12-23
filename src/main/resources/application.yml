@@ -1,0 +1,41 @@
+server:
+  port: 8081
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+# Настройки безопасности
+JWT_ACCESS_COOKIE_NAME: access_token
+JWT_REFRESH_COOKIE_NAME: refresh_token
+JWT_ACCESS_TOKEN_DURATION_MINUTE: 30
+JWT_ACCESS_TOKEN_DURATION_SECOND: 1800
+JWT_REFRESH_TOKEN_DURATION_DAY: 7
+JWT_REFRESH_TOKEN_DURATION_SECOND: 604800
+
+jwt:
+  secret: "ThisIsASecretKeyThatMustBeAtLeast32BytesLongAndSecure!"
+
+spring:
+  web:
+    resources:
+      static-locations: classpath:/static/
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demo_db
+    username: postgres
+    password: 12345678
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+logging:
+  level:
+    org.springframework.boot: DEBUG
+    org.springframework.security: DEBUG
+    org.hibernate: ERROR

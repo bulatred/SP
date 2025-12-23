@@ -1,0 +1,44 @@
+<!-- src/main/resources/static/index.html -->
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<head>
+    <title>Автобусы</title>
+</head>
+<body>
+    <h1>Вход</h1>
+    <input id="username" placeholder="Логин" value="admin">
+    <input id="password" type="password" placeholder="Пароль" value="password">
+    <button onclick="login()">Войти</button>
+
+    <h2>Список автобусов</h2>
+    <button onclick="loadBuses()">Загрузить автобусы</button>
+    <pre id="result"></pre>
+
+    <script>
+        let token = null;
+
+        async function login() {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value
+                })
+            });
+            const data = await res.json();
+            token = data.token;
+            document.getElementById('result').innerHTML = 'Токен получен!';
+        }
+
+        async function loadBuses() {
+            const res = await fetch('/api/buses', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const buses = await res.json();
+            document.getElementById('result').innerHTML = JSON.stringify(buses, null, 2);
+        }
+    </script>
+</body>
+</html>
