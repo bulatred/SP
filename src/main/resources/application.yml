@@ -6,7 +6,7 @@ server:
       enabled: true
       force: true
 
-# Настройки безопасности
+
 JWT_ACCESS_COOKIE_NAME: access_token
 JWT_REFRESH_COOKIE_NAME: refresh_token
 JWT_ACCESS_TOKEN_DURATION_MINUTE: 30
@@ -33,9 +33,23 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 logging:
   level:
     org.springframework.boot: DEBUG
     org.springframework.security: DEBUG
     org.hibernate: ERROR
+
+file:
+  upload:
+    dir: ./uploads
+
+telegram:
+  bot:
+    token: 7086387646:AAFKQENbhawf4ULxC74zHj4ZsvixvbgB0CY
+  chat:
+    id: "1802642059"  

@@ -1,4 +1,3 @@
-// src/main/java/com/example/demo/service/impl/AuthServiceImpl.java
 package com.example.demo.service.impl;
 
 import com.example.demo.dto.LoginRequest;
@@ -10,6 +9,7 @@ import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.security.JwtService;
 import com.example.demo.service.AuthService;
+import com.example.demo.service.TelegramService;
 
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -33,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private final TelegramService telegramService;
 
     @Override
     public LoginResponse login(LoginRequest request) {
@@ -75,6 +76,10 @@ public class AuthServiceImpl implements AuthService {
             // 6. Устанавливаем аутентификацию
             SecurityContextHolder.getContext().setAuthentication(auth);
             log.info("Аутентификация успешна для пользователя: {}", username);
+
+            // 7. Отправляем сообщение в Telegram
+            telegramService.sendMessage("Пользователь " + username + " вошёл в систему");
+            log.info("Отправлено сообщение в Telegram для пользователя: {}", username);
 
             return new LoginResponse(true, "ROLE_USER", token);
         } catch (Exception e) {

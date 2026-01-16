@@ -24,8 +24,8 @@ public class Token {
 
     private LocalDateTime expiryDate;
 
-    private boolean revoked;   // ← ДОБАВЛЕНО
-    private boolean expired;   // ← ДОБАВЛЕНО
+    private boolean revoked;  
+    private boolean expired;   
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

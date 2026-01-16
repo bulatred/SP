@@ -1,0 +1,56 @@
+<!-- src/main/resources/static/upload.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Загрузка CSV</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h2>Загрузить датчики из CSV</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" accept=".csv" required>
+        <button type="submit">Загрузить CSV</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                document.getElementById('result').innerHTML = 'Выберите файл';
+                return;
+            }
+
+            // Проверка MIME-типа
+            if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+                document.getElementById('result').innerHTML = 'Разрешены только CSV-файлы';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const res = await fetch('/api/sensors/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    const text = await res.text();
+                    document.getElementById('result').innerHTML = text;
+                } else {
+                    const error = await res.text();
+                    document.getElementById('result').innerHTML = 'Ошибка: ' + error;
+                }
+            } catch (err) {
+                document.getElementById('result').innerHTML = 'Ошибка сети: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

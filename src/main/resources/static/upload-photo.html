@@ -1,0 +1,52 @@
+<!-- src/main/resources/static/upload-photo.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Загрузить фото</title>
+</head>
+<body>
+    <h2>Загрузить фото автобуса</h2>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" name="file" accept="image/*" required>
+        <input type="number" name="busId" placeholder="ID автобуса" required>
+        <button type="submit">Загрузить фото</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const busId = document.querySelector('input[name="busId"]').value;
+
+            if (!file) {
+                document.getElementById('result').innerHTML = 'Выберите файл';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('busId', busId);
+
+            try {
+                const res = await fetch('/api/files/upload-photo', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (res.ok) {
+                    const text = await res.text();
+                    document.getElementById('result').innerHTML = text;
+                } else {
+                    const error = await res.text();
+                    document.getElementById('result').innerHTML = 'Ошибка: ' + error;
+                }
+            } catch (err) {
+                document.getElementById('result').innerHTML = 'Ошибка сети: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

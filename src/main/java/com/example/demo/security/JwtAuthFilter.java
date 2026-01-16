@@ -1,4 +1,3 @@
-// src/main/java/com/example/demo/security/JwtAuthFilter.java
 package com.example.demo.security;
 
 import java.io.IOException;
@@ -43,7 +42,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String accessToken = getJwtFromCookie(request);
 
         if (accessToken == null) {
-            log.debug("Токен не найден в cookie: {}", request.getRequestURI());
             filterChain.doFilter(request, response);
             return;
         }

@@ -15,17 +15,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
+        @Override
+        public UserDetails loadUserByUsername(String username)
+                throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // ✅ Берём роль из БД и превращаем в строку вида "ROLE_ADMIN"
+        String role = user.getRole().name(); // Например: "ROLE_ADMIN"
+
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUsername())
                 .password(user.getPassword())
-                .roles("USER")
+                .authorities("ROLE_" + role.replace("ROLE_", "")) // ← Гарантируем правильный формат
                 .build();
-    }
+        }
 }
